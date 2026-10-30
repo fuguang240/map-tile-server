@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本地地图瓦片可视化</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    html, body { margin: 0; height: 100%; }
+    #map { height: 100%; }
+    .info { position: absolute; z-index: 1000; top: 10px; left: 50%;
+            transform: translateX(-50%); background: rgba(255,255,255,.9);
+            padding: 6px 14px; border-radius: 6px; font: 13px/1.6 "Microsoft YaHei", sans-serif;
+            box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+  </style>
+</head>
+<body>
+  <div class="info">本地瓦片服务：/tiles/{z}/{x}/{y}.png（Apache）</div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // 以长沙市区为中心（与 fetch_tiles.py --center 28.228,112.937 对应）
+    const map = L.map('map', { maxZoom: 14 }).setView([28.228, 112.937], 13);
+
+    // 本地瓦片图层：服务器访问走 /tiles，本地 file:// 调试可改为 ./tiles
+    const tileUrl = location.protocol === 'file:' ? './tiles/{z}/{x}/{y}.png' : '/tiles/{z}/{x}/{y}.png';
+    L.tileLayer(tileUrl, {
+      maxZoom: 14,
+      attribution: 'Local tile server (Apache)'
+    }).addTo(map);
+
+    // 中心点标记
+    L.marker([28.228, 112.937]).addTo(map)
+      .bindPopup('瓦片服务器中心点（示例）')
+      .openPopup();
+  </script>
+</body>
+</html>
